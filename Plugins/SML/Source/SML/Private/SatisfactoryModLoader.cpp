@@ -3,13 +3,14 @@
 #include "Toolkit/AssetTypes/FbxMeshExporter.h"
 #include "Toolkit/OldToolkit/FGAssetDumper.h"
 #include "FGPlayerController.h"
+#include "Configuration/ConfigManager.h"
 #include "Tooltip/ItemTooltipSubsystem.h"
-#include "Configuration/Legacy/LegacyConfigurationHelper.h"
 #include "Toolkit/AssetTypes/MaterialAssetSerializer.h"
 #include "Registry/ModContentRegistry.h"
 #include "Network/NetworkHandler.h"
 #include "Registry/RemoteCallObjectRegistry.h"
 #include "Network/SMLConnection/SMLNetworkManager.h"
+#include "Patching/Patch/CheatManagerPatch.h"
 #include "Player/SMLRemoteCallObject.h"
 #include "Registry/SubsystemHolderRegistry.h"
 #include "Patching/Patch/MainMenuPatch.h"
@@ -42,7 +43,7 @@ TMap<FName, FString> FSatisfactoryModLoader::GetExtraAttributes() {
 }
 
 void FSatisfactoryModLoader::LoadSMLConfiguration(bool bAllowSave) {
-    const FString ConfigLocation = FLegacyConfigurationHelper::GetModConfigFilePath(TEXT("SML"));
+    const FString ConfigLocation = UConfigManager::GetConfigurationFilePath(FConfigId{TEXT("SML")});
     IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
     bool bShouldWriteConfiguration = false;
     
@@ -126,6 +127,11 @@ void FSatisfactoryModLoader::RegisterSubsystemPatches() {
 
     //Register options menu key bindings patch, providing better keybind categorization
     FOptionsKeybindPatch::RegisterPatch();
+
+    //Only register these patches in shipping, where bodies of the ACharacter::Cheat methods are stripped
+#if UE_BUILD_SHIPPING
+    FCheatManagerPatch::RegisterPatch();
+#endif
 }
 
 void FSatisfactoryModLoader::RegisterSubsystems() {

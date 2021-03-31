@@ -26,7 +26,7 @@ FORCEINLINE bool FConfigId::operator==(const FConfigId& ConfigId) const {
     return ConfigId.ModReference == ModReference && ConfigId.ConfigCategory == ConfigCategory;
 }
 
-UCLASS(Blueprintable)
+UCLASS(Abstract, Blueprintable)
 class SML_API UModConfiguration : public UObject {
     GENERATED_BODY()
 public:
@@ -44,5 +44,13 @@ public:
 
     /** Root property of this configuration describing it's values */
     UPROPERTY(EditDefaultsOnly, Instanced, BlueprintReadOnly)
-    UConfigPropertySection* RootSection;   
+    UConfigPropertySection* RootSection;
+
+	/** Custom Widget - placed at the Bottom of the Mod Config Widgets*/
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+		TSubclassOf<UUserWidget> CustomWidget;
+
+#if WITH_EDITOR
+    virtual EDataValidationResult IsDataValid(TArray<FText>& ValidationErrors) override;
+#endif
 };

@@ -1,6 +1,5 @@
 #pragma once
 #include "CoreMinimal.h"
-#include "Configuration/ConfigValue.h"
 #include "Subsystems/EngineSubsystem.h"
 #include "Configuration/ModConfiguration.h"
 #include "Reflection/ReflectionHelper.h"
@@ -12,7 +11,6 @@
 
 class UUserWidget;
 class URootConfigValueHolder;
-class UConfigValueSection;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogConfigManager, Log, Log)
 
@@ -56,11 +54,11 @@ public:
     void MarkConfigurationDirty(const FConfigId& ConfigId);
     
     /** Fills passed struct with a data obtained from active configuration identified by passed config id */
-    UFUNCTION(BlueprintCallable, CustomThunk, meta = (CustomStructureParam = "StructInfo"))
+    UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, CustomThunk, meta = (CustomStructureParam = "StructInfo"))
     void FillConfigurationStruct(const FConfigId& ConfigId, UPARAM(Ref) const FDynamicStructInfo& StructInfo);
 
     /** Creates a configuration widget hierarchy for active configuration specified by passed id */
-    UFUNCTION(BlueprintCallable)
+    UFUNCTION(BlueprintCallable, meta = (DefaultToSelf = "Outer"))
     UUserWidget* CreateConfigurationWidget(const FConfigId& ConfigId, UUserWidget* Outer);
 
     /** Registers a configuration under specified ID. Should be only called on startup for it to load from disk */
@@ -73,7 +71,7 @@ public:
 
     /** Retrieves root configuration section value for provided configuration ID */
     UFUNCTION(BlueprintPure)
-    UConfigValueSection* GetConfigurationRootSection(const FConfigId& ConfigId) const;
+    UConfigPropertySection* GetConfigurationRootSection(const FConfigId& ConfigId) const;
 
     void Initialize(FSubsystemCollectionBase& Collection) override;
     
@@ -81,7 +79,7 @@ public:
     static FString GetConfigurationFolderPath();
 private:
     friend class FSatisfactoryModLoader;
-    
+	friend class URuntimeBlueprintFunctionLibrary;
     /** Returns path to the provided configuration */
     static FString GetConfigurationFilePath(const FConfigId& ConfigId);
 

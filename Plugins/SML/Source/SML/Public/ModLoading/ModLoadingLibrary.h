@@ -6,6 +6,7 @@
 
 class UTexture2D;
 class IPlugin;
+class FJsonObject;
 
 /** Mod name of the Satisfactory itself, backend by the dummy mod info with changelist-defined version number */
 #define FACTORYGAME_MOD_NAME TEXT("FactoryGame")
@@ -23,11 +24,11 @@ struct SML_API FModInfo {
      * Cannot contain non-alphabetical characters except underscores
      * Replaces Mod Reference from SML 2.x.x versions and follows the same rules
      */
-    UPROPERTY(BlueprintReadOnly)
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
     FString Name;
     
     /** Display name of the mod */
-    UPROPERTY(BlueprintReadOnly)
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
     FString FriendlyName;
     
     /**
@@ -35,23 +36,23 @@ struct SML_API FModInfo {
      * If the mod does not declare SML metadata, it's
      * semantic version is deduced from UE plugin version by using it as major
      */
-    UPROPERTY(BlueprintReadOnly)
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
     FVersion Version;
     
     /** Description of the mod to be displayed in the plugin manager and mod list */
-    UPROPERTY(BlueprintReadOnly)
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
     FString Description;
     
     /** Authors of the mod, displayed to the user in the mod list and plugin manager */
-    UPROPERTY(BlueprintReadOnly)
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
     FString CreatedBy;
 
     /** Whenever this mod accepts any remote version, basically behaving as a client-/server-side only mod */
-    UPROPERTY(BlueprintReadOnly)
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
     bool bAcceptsAnyRemoteVersion;
 
     /** Range of the remote versions accepted by this mod. Defaults to >=CurrentVersion, unless explicitly defined */
-    UPROPERTY(BlueprintReadOnly)
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
     FVersionRange RemoteVersionRange;
 };
 
