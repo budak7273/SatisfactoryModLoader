@@ -11,17 +11,7 @@ void SAlpakitModEntry::Construct(const FArguments& Args, TSharedRef<IPlugin> InM
 	Mod = InMod;
 	ChildSlot[
 		SNew(SHorizontalBox)
-		+SHorizontalBox::Slot().FillWidth(1)[
-			SNew(STextBlock)
-			.Text_Lambda([InMod]() {
-				const FString DisplayText = FString::Printf(TEXT("%s (%s)"), *InMod->GetDescriptor().FriendlyName, *InMod->GetName());
-				return FText::FromString(DisplayText);
-			})
-			.HighlightText_Lambda([InOwner]() {
-				return FText::FromString(InOwner->GetLastFilter());
-			})
-		]
-		+SHorizontalBox::Slot().AutoWidth()[
+		+SHorizontalBox::Slot().AutoWidth().Padding(0, 0, 5, 0)[
 			SNew(SButton)
 			.Text(LOCTEXT("PackageModAlpakit", "Alpakit!"))
 			.OnClicked_Lambda([this]() {
@@ -30,6 +20,16 @@ void SAlpakitModEntry::Construct(const FArguments& Args, TSharedRef<IPlugin> InM
 			})
 			.ToolTipText_Lambda([this]() {
 				return FText::FromString(FString::Printf(TEXT("Alpakit %s"), *this->Mod->GetName()));
+			})
+		]
+		+SHorizontalBox::Slot().FillWidth(1)[
+			SNew(STextBlock)
+			.Text_Lambda([InMod]() {
+				const FString DisplayText = FString::Printf(TEXT("%s (%s)"), *InMod->GetDescriptor().FriendlyName, *InMod->GetName());
+				return FText::FromString(DisplayText);
+			})
+			.HighlightText_Lambda([InOwner]() {
+				return FText::FromString(InOwner->GetLastFilter());
 			})
 		]
 	];
@@ -81,13 +81,13 @@ void SAlpakitModEntry::PackageMod() const {
 	const FString LaunchGameArgument = GetArgumentForLaunchType(Settings->LaunchGameAfterPacking);
 
 	const FString CommandLine = FString::Printf(TEXT("-ScriptsForProject=\"%s\" PackagePlugin -Project=\"%s\" -PluginName=\"%s\" -GameDir=\"%s\" %s"),
-	                                            *ProjectPath, *ProjectPath, *PluginName, *Settings->SatisfactoryGamePath.Path, *AdditionalUATArguments);
+												*ProjectPath, *ProjectPath, *PluginName, *Settings->SatisfactoryGamePath.Path, *AdditionalUATArguments);
 
 	const FText PlatformName = GetCurrentPlatformName();
 	IUATHelperModule::Get().CreateUatTask(CommandLine, PlatformName,
-			LOCTEXT("PackageModTaskName", "Packaging Mod"),
-        LOCTEXT("PackageModTaskShortName", "Package Mod Task"),
-        FAlpakitStyle::Get().GetBrush("Alpakit.OpenPluginWindow"));
+		LOCTEXT("PackageModTaskName", "Packaging Mod"),
+		LOCTEXT("PackageModTaskShortName", "Package Mod Task"),
+		FAlpakitStyle::Get().GetBrush("Alpakit.OpenPluginWindow"));
 }
 
 #undef LOCTEXT_NAMESPACE
