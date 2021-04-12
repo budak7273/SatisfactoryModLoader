@@ -87,3 +87,6 @@ Plugins/*
 /Content/WwiseAudio/*
 /Content/FactoryGame/*
 
+/SDL2.dll
+/umodel.cfg
+/umodel - satisfactory.lnk
