@@ -43,16 +43,6 @@ void SAlpakitModEntry::Construct(const FArguments& Args, TSharedRef<IPlugin> InM
 				return FText::FromString(InOwner->GetLastFilter());
 			})
 		]
-		+ SHorizontalBox::Slot().FillWidth(1)[
-			SNew(STextBlock)
-			.Text_Lambda([InMod]() {
-				const FString DisplayText = FString::Printf(TEXT("%s (%s)"), *InMod->GetDescriptor().FriendlyName, *InMod->GetName());
-				return FText::FromString(DisplayText);
-			})
-			.HighlightText_Lambda([InOwner]() {
-				return FText::FromString(InOwner->GetLastFilter());
-			})
-		]
 	];
 }
 
