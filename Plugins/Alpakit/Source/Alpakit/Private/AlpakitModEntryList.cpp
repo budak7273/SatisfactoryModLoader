@@ -1,22 +1,34 @@
 #include "AlpakitModEntryList.h"
 
-
 #include "AlpakitModEntry.h"
 #include "Interfaces/IPluginManager.h"
 
+#define LOCTEXT_NAMESPACE "AlpakitModListEntry"
+
 void SAlpakitModEntryList::Construct(const FArguments& Args) {
 	ChildSlot[
-		SAssignNew(ModList, SListView<TSharedRef<IPlugin>>)
-        .SelectionMode(ESelectionMode::None)
-        .ListItemsSource(&FilteredMods)
-        .OnGenerateRow_Lambda([this](TSharedRef<IPlugin> Mod, const TSharedRef<STableViewBase>& List) {
-        	return SNew( STableRow<TSharedRef<IPlugin>>, List)[
-				SNew( SAlpakitModEntry, Mod, SharedThis(this))
-			];
-        })
-    ];
-	
-    LoadMods();
+		SNew(SVerticalBox)
+		+ SVerticalBox::Slot().AutoHeight()[
+			SNew(SHorizontalBox)
+			+ SHorizontalBox::Slot().AutoWidth()[
+				SNew(SButton)
+				.Text(LOCTEXT("PackageModAlpakitAll", "Alpakit All!"))
+				.OnClicked(this,& SAlpakitModEntryList::PackageAllMods)
+			]
+		]
+		+ SVerticalBox::Slot().AutoHeight()[
+			SAssignNew(ModList, SListView<TSharedRef<IPlugin>>)
+			.SelectionMode(ESelectionMode::None)
+			.ListItemsSource(&FilteredMods)
+			.OnGenerateRow_Lambda(
+			   [this](TSharedRef<IPlugin> Mod, const TSharedRef<STableViewBase>& List) {
+				   return SNew(STableRow<TSharedRef<IPlugin>>, List)[
+					   SNew(SAlpakitModEntry, Mod, SharedThis(this))
+				   ];
+			   })
+		]];
+
+	LoadMods();
 }
 
 bool DoesPluginHaveRuntime(const IPlugin& Plugin) {
@@ -66,7 +78,7 @@ bool PluginMatchesSearchTokens(const IPlugin& Plugin, const TArray<FString>& Tok
 	const FString PluginName = Plugin.GetName();
 	const FString FriendlyName = Plugin.GetDescriptor().FriendlyName;
 	const FString Description = Plugin.GetDescriptor().Description;
-	
+
 	for (const FString& Token : Tokens) {
 		if (PluginName.Contains(Token) ||
 			FriendlyName.Contains(Token) ||
@@ -80,14 +92,14 @@ bool PluginMatchesSearchTokens(const IPlugin& Plugin, const TArray<FString>& Tok
 void SAlpakitModEntryList::Filter(const FString& InFilter) {
 	LastFilter = InFilter;
 	FilteredMods.Empty();
-	
+
 	if (InFilter.IsEmpty()) {
 		FilteredMods = Mods;
 	} else {
 		// tokenize filter keywords
 		TArray<FString> FilterTokens;
 		InFilter.ParseIntoArray(FilterTokens, TEXT(" "), true);
-		
+
 		// check each mod for it to contain the tokens
 		for (TSharedRef<IPlugin> Mod : Mods) {
 			// check each token in mod name
@@ -96,7 +108,7 @@ void SAlpakitModEntryList::Filter(const FString& InFilter) {
 			}
 		}
 	}
-	
+
 	ModList->RequestListRefresh();
 }
 
@@ -108,3 +120,48 @@ void SAlpakitModEntryList::SetShowEngine(bool bInShowEngine) {
 	bShowEngine = bInShowEngine;
 	LoadMods();
 }
+
+FReply SAlpakitModEntryList::PackageAllMods() {
+	TSharedPtr<SAlpakitModEntry> First;
+	TArray<TSharedPtr<SAlpakitModEntry>> NextEntries;
+
+	UE_LOG(LogTemp, Display, TEXT("Alpakit All!"))
+
+	for (TSharedRef<IPlugin> Mod : FilteredMods) {
+		UE_LOG(LogTemp, Display, TEXT("Collecting Plugin %s!"), *Mod->GetName())
+
+		TSharedPtr<ITableRow> TableRow = ModList->WidgetFromItem(Mod);
+		if (!TableRow.IsValid()) {
+			UE_LOG(LogTemp, Display, TEXT("TableRow not found!"))
+
+			continue;
+		}
+
+		TSharedPtr<SAlpakitModEntry> ModEntry = StaticCastSharedPtr<SAlpakitModEntry>(TableRow->GetContent());
+		if (!ModEntry.IsValid()) {
+			UE_LOG(LogTemp, Display, TEXT("TableRow content is not valid!"))
+
+			continue;
+		}
+
+		if(!ModEntry->IsSelected()) {
+			UE_LOG(LogTemp, Display, TEXT("Plugin is not selected: %s"), * Mod->GetName());
+
+			continue;
+		}
+
+		if (!First) {
+			First = ModEntry.ToSharedRef();
+		} else {
+			NextEntries.Add(ModEntry.ToSharedRef());
+		}
+	}
+
+	if (First) {
+		First->PackageMod(NextEntries);
+	}
+
+	return FReply::Handled();
+}
+
+#undef LOCTEXT_NAMESPACE

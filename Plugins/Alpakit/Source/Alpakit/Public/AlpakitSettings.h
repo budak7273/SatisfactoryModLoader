@@ -30,4 +30,7 @@ public:
 
 	UPROPERTY(EditAnywhere, config, Category = Config)
 	bool bCopyModsToGame = false;
+
+	UPROPERTY(BlueprintReadOnly, config, Category = Config)
+	TMap<FString, bool> ModSelection;
 };
