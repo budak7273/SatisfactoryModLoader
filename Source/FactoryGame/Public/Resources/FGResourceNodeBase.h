@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h" // MODDING EDIT: no PCH
 #include "Replication/FGStaticReplicatedActor.h"
 #include "FGSaveInterface.h"
 #include "Resources/FGResourceDescriptor.h"
@@ -198,7 +199,7 @@ public:
 private:
 	/** The actor that contains the mesh for this node */
 	UPROPERTY( EditInstanceOnly, Category = "Resources" )
-	TWeakObjectPtr< class AActor > mMeshActor;
+	TSoftObjectPtr< class AActor > mMeshActor;
 
 	/** Should this be handled by significance manager */
 	UPROPERTY( EditDefaultsOnly, Category = "Significance" )

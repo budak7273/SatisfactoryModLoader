@@ -369,6 +369,15 @@ protected:
 
 	UFUNCTION( BlueprintPure, Category="Buildable" )
 	bool ShouldModifyWorldGrid() const { return mShouldModifyWorldGrid; }
+
+	/** Setter for mDidFirstTimeUse so we can ensure that it is flagged for replication property */
+	void SetDidFirstTimeUse( bool didUse );
+
+	UFUNCTION( BlueprintCallable, Category = "Buildable" )
+	TArray< UStaticMeshComponent* > CreateBuildEffectProxyComponents();
+
+	UFUNCTION( BlueprintCallable, Category = "Buildable" )
+	void DestroyBuildEffectProxyComponents();
 	
 private:
 	/** Create a stat for the buildable */
@@ -508,6 +517,10 @@ protected:
 	/** Whether or not this building should use ForceNetUpdate() when a player registers/unregisters from it. */
 	UPROPERTY( EditDefaultsOnly, Category = "Replication" )
 	bool mForceNetUpdateOnRegisterPlayer;
+	
+	/** Whether or not this building should set Dorm_Awake when a player registers interaction and to set Dorm_DormantAll when no more players are interacting. */
+	UPROPERTY( EditDefaultsOnly, Category = "Replication" )
+	bool mToggleDormancyOnInteraction;
 
 	/** Flag for whether the build effect is active */
 	uint8 mBuildEffectIsPlaying : 1;
@@ -622,6 +635,9 @@ private:
 	/** Whether or not this buildable should affect the WorldGrid subsystem */
 	UPROPERTY( EditDefaultsOnly, Category = "Buildable" )
 	bool mShouldModifyWorldGrid;
+
+	UPROPERTY(Transient)
+	TArray< UStaticMeshComponent* > mProxyBuildEffectComponents;
 };
 
 /** Definition for GetDefaultComponents. */

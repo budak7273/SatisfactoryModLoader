@@ -19,7 +19,7 @@ UGameInstanceModule* UGameInstanceModuleManager::FindModule(const FName& ModRefe
 }
 
 void UGameInstanceModuleManager::Initialize(FSubsystemCollectionBase& Collection) {
-    this->bIsInitializingCurrently = true;
+	this->bIsInitializingCurrently = true;
     this->CurrentSubsystemCollection = &Collection;
     EnsureSMLSubsystemsInitialized();
     
