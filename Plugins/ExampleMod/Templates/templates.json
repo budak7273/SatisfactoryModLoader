@@ -1,0 +1,27 @@
+{
+    "$schema": "./../../Alpakit/Templates/templates.schema.json",
+    "templates": [
+        {
+            "name": "ContentLib: Blueprint Only",
+            "description": "Create a mod that is ready to use ContentLib JSON and Blueprint Library features. (You can add C++ code later)",
+            "path": "ContentLibBlueprintBlank",
+            "dependencies": [
+                {
+                    "name": "ContentLib",
+                    "version": "^1.0.3"
+                }
+            ]
+        },
+        {
+            "name": "ContentLib: C++ & Blueprint",
+            "description": "Create a mod that is ready to use ContentLib JSON, C++, and Blueprint libraries.",
+            "path": "ContentLibCPPAndBlueprintBlank",
+            "dependencies": [
+                {
+                    "name": "ContentLib",
+                    "version": "^1.0.3"
+                }
+            ]
+        }
+    ]
+}
